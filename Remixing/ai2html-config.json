@@ -1,0 +1,34 @@
+{	
+	"fonts": [
+        {
+            "aifont": "AdobeSongStd-Light",
+            "family": "SimSun,STSong,宋体,华文宋体,serif",
+            "weight":"",
+            "style":""
+        },
+        {
+            "aifont": "MyriadPro-Regular",
+            "family": "Myriad Pro",
+            "weight": "400",
+            "style": ""
+        },
+        {
+            "aifont": "ArialNarrow",
+            "family": "Arial",
+            "weight": "400",
+            "style": ""
+        },
+        {
+            "aifont": "Arial",
+            "family": "Arial",
+            "weight": "400",
+            "style": ""
+        },
+        {
+            "aifont": "SourceSerifRoman-Bold",
+            "family": "SourceSerifRoman",
+            "weight": "400",
+            "style": "Bold"
+        }
+    ]
+}

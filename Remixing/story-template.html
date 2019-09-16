@@ -1,0 +1,1472 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript">
+        (function() {
+            // only want one resizer on the page
+            if (document.documentElement.className.indexOf("g-resizer-v3-init") > -1) return;
+            document.documentElement.className += " g-resizer-v3-init";
+            // require IE9+
+            if (!("querySelector" in document)) return;
+            function resizer() {
+                var elements = Array.prototype.slice.call(document.querySelectorAll(".g-artboard[data-min-width]")),
+                    widthById = {};
+                elements.forEach(function(el) {
+                    var parent = el.parentNode,
+                        width = widthById[parent.id] || parent.getBoundingClientRect().width,
+                        minwidth = el.getAttribute("data-min-width"),
+                        maxwidth = el.getAttribute("data-max-width");
+                    widthById[parent.id] = width;
+                    if (+minwidth <= width && (+maxwidth >= width || maxwidth === null)) {
+                        el.style.display = "block";
+                    } else {
+                        el.style.display = "none";
+                    }
+                });
+                try {
+                    if (window.parent && window.parent.$) {
+                        window.parent.$("body").trigger("resizedcontent", [window]);
+                    }
+                    if (window.require) {
+                        require(['foundation/main'], function() {
+                            require(['shared/interactive/instances/app-communicator'], function(AppCommunicator) {
+                                AppCommunicator.triggerResize();
+                            });
+                        });
+                    }
+                } catch(e) { console.log(e); }
+            }
+            document.addEventListener('DOMContentLoaded', resizer);
+            // feel free to replace throttle with _.throttle, if available
+            window.addEventListener('resize', throttle(resizer, 200));        
+            function throttle(func, wait) {
+                // from underscore.js
+                var _now = Date.now || function() { return new Date().getTime(); },
+                    context, args, result, timeout = null, previous = 0;
+                var later = function() {
+                    previous = _now();
+                    timeout = null;
+                    result = func.apply(context, args);
+                    if (!timeout) context = args = null;
+                };
+                return function() {
+                    var now = _now(), remaining = wait - (now - previous);
+                    context = this;
+                    args = arguments;
+                    if (remaining <= 0 || remaining > wait) {
+                        if (timeout) {
+                            clearTimeout(timeout);
+                            timeout = null;
+                        }
+                        previous = now;
+                        result = func.apply(context, args);
+                        if (!timeout) context = args = null;
+                    } else if (!timeout && options.trailing !== false) {
+                        timeout = setTimeout(later, remaining);
+                    }
+                    return result;
+                };
+            }
+           
+        })();
+    </script>  
+    <style>
+        body {
+            margin:auto;
+            padding:50px 10px;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .serif {
+            font-family: 'Lora', serif;
+        }
+        .sans-serif {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* choose a light or dark theme to add to the body tag. */
+        .dark-theme {
+            background-color: #151515;
+            color: #fbfbfb;
+        }
+        .light-theme {
+            background-color: white;
+            color: black;
+        }
+
+        .header {
+            padding-top:20px;
+            padding-bottom:20px;
+        }
+
+        .story-body, .header, .chart-section, .footer {
+            margin:auto;
+            max-width: 700px;
+        }
+
+        .footer {
+            padding-top:20px;
+            padding-bottom:20px;
+        }
+
+        .chart-section.wide{
+            width:100%;
+            max-width:1200px;
+        }
+
+        .chart-section.wide p.chart-title {
+            width:100%;
+            max-width:700px;
+            margin-left:auto;
+            margin-right:auto;
+        }
+        .chart-section.wide p.chart-subhead {
+            width:100%;
+            max-width:700px;
+            margin-left:auto;
+            margin-right:auto;
+        }
+
+
+        /* text styles */
+
+        p.kicker {
+            font-size:1rem;
+            text-transform:uppercase;
+        }
+
+        .text-center {
+            text-align:center;
+        }
+
+        h1.headline {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+            margin-top: 1rem;
+            font-weight: 800;
+        }
+
+        h2.subhead {
+            font-size: 1.4rem;
+            line-height: 2rem;
+            margin-bottom:0;
+            margin-top: 15px;
+            font-weight: 400;
+        }
+
+        p.body-text {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            margin-top:0;
+            margin-bottom:15px;
+        }
+
+        h3.section-head {
+            font-size:2rem;
+            margin:40px 0 10px 0;
+            font-weight:700;
+            line-height:1.3;
+        }
+
+        .byline {
+            font-size: 1.1rem;
+            line-height: 0.75;
+            margin-top: 1.5rem;
+            font-weight: 500;
+        }
+
+        .date {
+            font-size: 0.85rem;
+            line-height: 1;
+            margin-top: 10px;
+            font-weight:400;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+        }
+
+
+        p.note {
+            font-size:0.85rem;
+        }
+
+        /* chart styles */
+
+        .chart-section {
+            width:100%;
+            max-width:1200px;
+            padding:20px 0px;
+        }
+
+        .story-body .chart-section {
+            padding-top:0px;
+        }
+
+
+        .chart-row {
+            display:flex;
+            justify-content: space-between;
+            margin-top:20px;
+        }
+
+        p.chart-title {
+            font-size:1.3rem;
+            font-weight:700;
+            max-width:700px;
+            margin:0px auto 5px auto;
+        }
+        p.chart-subhead {
+            margin:0 auto;
+            max-width:700px;
+            font-size:1rem;
+            margin-bottom:15px;
+        }
+
+        p.chart-label {
+            margin:0 0 5px 0;
+            font-size:0.85rem;
+            text-transform:uppercase;
+            font-weight:600;
+        }
+
+        .chart-row .chart {
+            width:100%;
+            padding-right:15px;
+            min-width:calc(25% - 15px);
+
+        }
+
+
+
+        p.chart-source {
+            font-size:0.85rem;
+            margin:0;
+        }
+
+
+
+
+
+        /* photos */
+
+        .photo-section {
+            padding:30px 0px;
+            width:100%;
+            margin:auto;
+            display:flex;
+            max-width:1200px;
+        }
+
+        .photo {
+            width:100%;
+            padding-right:15px;
+        }
+        .photo img {
+            width:100%;	
+        }
+
+        p.caption {
+            font-size:0.9rem;
+            margin:0;
+        }
+
+
+
+        /* mobile */
+
+        @media (max-width:700px) {
+
+            .chart-row {
+                display:block;
+            }
+
+            .chart-row .chart {
+                padding:0;
+            }
+
+            .photo-section {
+                display:block;
+            }
+            .photo {
+                padding:0;
+            }
+
+        }
+
+        #g-templates-laptop, #g-templates-medium, #g-templates-mobile {
+            display: none;
+        }
+
+        @media (max-width: 490px) {
+            #g-templates-mobile {
+                display: block;
+            }
+        }
+
+        @media (min-width: 490px) and (max-width: 620px) {
+            #g-templates-laptop {
+                display: block;
+            }
+        }
+
+        @media (min-width: 620px)  {
+            #g-templates-medium {
+                display: block;
+            }
+        }
+
+    </style>
+    
+    <!-- google fonts: Open Sans (sans-serif) and Lora (serif) -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700&display=swap" rel="stylesheet">
+      
+    <title>Dissecting Trailers</title>
+  </head>
+
+  <body class="light-theme"> <!-- all of the content on your html page goes inside the body -->
+
+    <div class="header">
+      <p class="kicker"></p>
+      <h1 class="headline"> Dissecting Trailers of Oscar Favorite Films</h1>
+      <h2 class="subhead">How the trailers of Silver Linings Playbook, Amour, and Lincoln look like when breaking down every cut.</h2>
+
+      <p class="byline">By HUIYI LIU</p>
+      <p class="byline">Disclaimer: The following article is original from NYT.</p>
+      <p class="date">Published on September 14, 2019</p>
+
+    </div>
+
+    <div class="story-body">
+      <p class="body-text serif">The first ever movie trailer was shown in November 1913, and since then, releasing trailers is one of the most common and effective marketing tools to advertise for the upcoming films. In recent years, with the rapid expansion of internet, many previously released trailers resurface on video sites such as Youtube, as newly released ones are also uploaded online and remain accessible for future viewers. Trailers appear to be more prevelant and powerful than ever. Audience can easily find and watch these short edited clips at any time to get an idea of the tone and mood of the film.</p>
+
+      <p class="body-text serif">There are several conventions when it comes to the making of a film trailer, which are preeminently established by the Hollywood film industry. A common trailer follows the three-act structure composition that highlights segments of the film's beginning, middle and ending. The last act often consists of visual montage with moments of the sotryclimax and emotion outburst to convey maximum appeal.</p>
+
+      <p class="body-text serif">The following article will look at the trailers of three films that were nominated for Best Picture at the Academy Awards. By visualizing the breakdown of every cut of these trailers, this analysis aims to dissect the the makeup of the trailer in relation to the narrative progression of the respective film.</p>
+
+    </div>
+
+    <div class="chart-section">
+        <div class="chart-row">
+          <div class="chart">
+
+
+
+
+            <!--- PASTE YOUR AI2HTML AFTER THIS LINE -->
+<div id="g-templates1-box" class="ai2html">
+
+<!-- Generated by ai2html v0.94.0 - 2019-09-15 01:13 -->
+<!-- ai file: templates1.ai -->
+<style type='text/css' media='screen,print'>
+	#g-templates1-box,
+	#g-templates1-box .g-artboard {
+		margin:0 auto;
+	}
+	#g-templates1-box p {
+		margin:0;
+	}
+	.g-aiAbs {
+		position:absolute;
+	}
+	.g-aiImg {
+		position:absolute;
+		top:0;
+		display:block;
+		width:100% !important;
+	}
+	.g-aiSymbol {
+		position: absolute;
+		box-sizing: border-box;
+	}
+	.g-aiPointText p { white-space: nowrap; }
+	#g-templates1-medium {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates1-medium p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:14px;
+		line-height:18px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates1-medium .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:24px;
+		line-height:16px;
+		height:16px;
+	}
+	#g-templates1-medium .g-pstyle1 {
+		height:18px;
+	}
+	#g-templates1-medium .g-pstyle2 {
+		line-height:16px;
+		height:16px;
+	}
+	#g-templates1-medium .g-pstyle3 {
+		font-family:Arial;
+		font-weight:400;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(170,170,170);
+	}
+	#g-templates1-medium .g-pstyle4 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		text-align:justify;
+		color:rgb(253,146,38);
+	}
+	#g-templates1-medium .g-pstyle5 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		text-align:justify;
+		color:rgb(250,79,67);
+	}
+	#g-templates1-medium .g-pstyle6 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		text-align:justify;
+		color:rgb(162,15,121);
+	}
+	#g-templates1-medium .g-pstyle7 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		text-align:justify;
+		color:rgb(170,170,170);
+	}
+	#g-templates1-medium .g-cstyle0 {
+		font-family:Myriad Pro;
+		font-weight:400;
+	}
+	#g-templates1-laptop {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates1-laptop p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:12px;
+		line-height:14px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates1-laptop .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:18px;
+		line-height:22px;
+		height:22px;
+	}
+	#g-templates1-laptop .g-pstyle1 {
+		height:14px;
+	}
+	#g-templates1-laptop .g-pstyle2 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(253,146,38);
+	}
+	#g-templates1-laptop .g-pstyle3 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(250,79,67);
+	}
+	#g-templates1-laptop .g-pstyle4 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(162,15,121);
+	}
+	#g-templates1-laptop .g-pstyle5 {
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(170,170,170);
+	}
+	#g-templates1-laptop .g-pstyle6 {
+		font-family:Arial;
+		font-weight:400;
+		font-size:11px;
+		line-height:13px;
+		height:13px;
+		color:rgb(170,170,170);
+	}
+	#g-templates1-mobile {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates1-mobile p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:12px;
+		line-height:14px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates1-mobile .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:16px;
+		line-height:19px;
+		height:19px;
+	}
+	#g-templates1-mobile .g-pstyle1 {
+		height:14px;
+	}
+	#g-templates1-mobile .g-pstyle2 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		text-align:right;
+		color:rgb(253,146,38);
+	}
+	#g-templates1-mobile .g-pstyle3 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(250,79,67);
+	}
+	#g-templates1-mobile .g-pstyle4 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(162,15,121);
+	}
+	#g-templates1-mobile .g-pstyle5 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(170,170,170);
+	}
+	#g-templates1-mobile .g-pstyle6 {
+		font-family:Arial;
+		font-weight:400;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(170,170,170);
+	}
+
+</style>
+
+	<!-- Artboard: medium -->
+	<div id="g-templates1-medium" class="g-artboard" style="width:620px; height:212px;" data-aspect-ratio="2.925" data-min-width="620">
+<div style=""></div>
+		<img id="g-templates1-medium-img" class="g-aiImg" alt="" src="ai2html-output/templates1-medium.png"/>
+		<div id="g-ai0-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:20.711%;margin-top:-32.9px;left:2.3704%;width:595px;">
+			<p class="g-pstyle0">Dissecting a trailer: Silver Linings Playbook</p>
+			<p class="g-pstyle1">A detailed breakdown of the official trailer - which parts of the film ended up in the trailer and </p>
+			<p class="g-pstyle2">how they were spliced together<span class="g-cstyle0"> </span></p>
+		</div>
+		<div id="g-ai0-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:42.8412%;margin-top:-6.8px;left:15.7965%;width:42px;">
+			<p class="g-pstyle3">0 sec</p>
+		</div>
+		<div id="g-ai0-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:42.8412%;margin-top:-6.8px;left:32.3778%;width:33px;">
+			<p class="g-pstyle3">30 </p>
+		</div>
+		<div id="g-ai0-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:42.8412%;margin-top:-6.8px;left:48.9592%;width:33px;">
+			<p class="g-pstyle3">60 </p>
+		</div>
+		<div id="g-ai0-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:42.8412%;margin-top:-6.8px;left:65.5404%;width:33px;">
+			<p class="g-pstyle3">90 </p>
+		</div>
+		<div id="g-ai0-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:42.8412%;margin-top:-6.8px;left:82.1218%;width:38px;">
+			<p class="g-pstyle3">120 </p>
+		</div>
+		<div id="g-ai0-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:51.4962%;margin-top:-7.2px;left:1.4061%;width:104px;">
+			<p class="g-pstyle4">Beginning of film</p>
+		</div>
+		<div id="g-ai0-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:67.5339%;margin-top:-7.2px;left:9.469%;width:54px;">
+			<p class="g-pstyle5">Middle</p>
+		</div>
+		<div id="g-ai0-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:82.1565%;margin-top:-7.2px;left:11.5301%;width:41px;">
+			<p class="g-pstyle6">End</p>
+		</div>
+		<div id="g-ai0-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:93.0056%;margin-top:-7.2px;left:6.7613%;width:71px;">
+			<p class="g-pstyle7">Not in film</p>
+		</div>
+	</div>
+
+	<!-- Artboard: laptop -->
+	<div id="g-templates1-laptop" class="g-artboard" style="width:490px; height:189px;" data-aspect-ratio="2.593" data-min-width="490" data-max-width="619">
+<div style=""></div>
+		<img id="g-templates1-laptop-img" class="g-aiImg" alt="" src="ai2html-output/templates1-laptop.png"/>
+		<div id="g-ai1-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:26.0941%;margin-top:-32.3px;left:1.5446%;width:427px;">
+			<p class="g-pstyle0">Dissecting a trailer: Silver Linings Playbook</p>
+			<p class="g-pstyle1">A breakdown of the official trailer - which parts of the film ended up in </p>
+			<p class="g-pstyle1">the trailer and how they were sliced together.</p>
+		</div>
+		<div id="g-ai1-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:28.1271%;margin-top:-6.2px;left:81.7411%;width:90px;">
+			<p class="g-pstyle2">Beginning of film</p>
+		</div>
+		<div id="g-ai1-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:34.4763%;margin-top:-6.2px;left:81.7411%;width:48px;">
+			<p class="g-pstyle3">Middle</p>
+		</div>
+		<div id="g-ai1-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:40.8255%;margin-top:-6.2px;left:81.7411%;width:38px;">
+			<p class="g-pstyle4">End</p>
+		</div>
+		<div id="g-ai1-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:47.0608%;margin-top:-5.9px;left:81.7411%;width:59px;">
+			<p class="g-pstyle5">Not in film</p>
+		</div>
+		<div id="g-ai1-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:86.9869%;margin-top:-7.4px;left:1.4684%;width:44px;">
+			<p class="g-pstyle6">0 sec</p>
+		</div>
+		<div id="g-ai1-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:86.9869%;margin-top:-7.4px;left:20.45%;width:32px;">
+			<p class="g-pstyle6">30</p>
+		</div>
+		<div id="g-ai1-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:86.9869%;margin-top:-7.4px;left:39.4314%;width:32px;">
+			<p class="g-pstyle6">60</p>
+		</div>
+		<div id="g-ai1-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:86.9869%;margin-top:-7.4px;left:58.4132%;width:32px;">
+			<p class="g-pstyle6">90</p>
+		</div>
+		<div id="g-ai1-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:86.9869%;margin-top:-7.4px;left:77.4998%;width:37px;">
+			<p class="g-pstyle6">120</p>
+		</div>
+	</div>
+
+	<!-- Artboard: mobile -->
+	<div id="g-templates1-mobile" class="g-artboard" style="max-width: 375px;max-height: 266px" data-aspect-ratio="1.411" data-min-width="0" data-max-width="489">
+<div style="padding: 0 0 70.88% 0;"></div>
+		<img id="g-templates1-mobile-img" class="g-aiImg" alt="" src="ai2html-output/templates1-mobile.png"/>
+		<div id="g-ai2-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:16.6872%;margin-top:-31.4px;left:2.5404%;width:382px;">
+			<p class="g-pstyle0">Dissecting a trailer: Silver Linings Playbook</p>
+			<p class="g-pstyle1">Seconds counts! How many seconds do different parts of the </p>
+			<p class="g-pstyle1">film have in the trailer?</p>
+		</div>
+		<div id="g-ai2-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:38.0632%;margin-top:-13.2px;right:77.7602%;width:71px;">
+			<p class="g-pstyle2">Beginning</p>
+			<p class="g-pstyle2"> of film</p>
+		</div>
+		<div id="g-ai2-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:51.6072%;margin-top:-7.2px;left:13.7643%;width:54px;">
+			<p class="g-pstyle3">Middle</p>
+		</div>
+		<div id="g-ai2-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:66.6561%;margin-top:-7.2px;left:17.1719%;width:41px;">
+			<p class="g-pstyle4">End</p>
+		</div>
+		<div id="g-ai2-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:81.3288%;margin-top:-7.2px;left:9.1732%;width:71px;">
+			<p class="g-pstyle5">Not in film</p>
+		</div>
+		<div id="g-ai2-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:93.613%;margin-top:-6.8px;left:21.5484%;width:42px;">
+			<p class="g-pstyle6">0 sec</p>
+		</div>
+		<div id="g-ai2-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:93.613%;margin-top:-6.8px;left:36.4284%;width:31px;">
+			<p class="g-pstyle6">15</p>
+		</div>
+		<div id="g-ai2-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:93.613%;margin-top:-6.8px;left:51.1497%;width:31px;">
+			<p class="g-pstyle6">30</p>
+		</div>
+		<div id="g-ai2-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:93.613%;margin-top:-6.8px;left:65.9117%;width:31px;">
+			<p class="g-pstyle6">45</p>
+		</div>
+		<div id="g-ai2-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:93.613%;margin-top:-6.8px;left:80.4484%;width:31px;">
+			<p class="g-pstyle6">60</p>
+		</div>
+		<div id="g-ai2-11" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:93.613%;margin-top:-6.8px;left:94.9378%;width:31px;">
+			<p class="g-pstyle6">75</p>
+		</div>
+	</div>
+
+</div>
+
+
+<div class="story-body">
+    <p class="body-text serif"></p>
+</div>
+
+
+        </div>
+        </div>
+    </div>
+
+<div class="story-body">
+    <p class="body-text serif">“Silver Linings Playbook” follows the standard model for trailers and largely align with the order of the film itself. Even though, as it is shown in the grpah, at the beginning of the trailer there is a shot from the film's ending part, it does not pertain to any important inforamtion, but rather, it is a establishing shot of the house that the main character lives in, which somewhat has no narrative significance. The trailer also feature clips that are not in the full-length film. Beside graphics of titles and credits, the "not in film" part contain some deleted scenes from the film, an other common practice in movie trailer.</p>
+
+    <p class="body-text serif">Clips from the beinnging of the film take up the majority of the trailor, follows by the middle, and little of the ending is revealed. There are 106 cuts in the 148-second of trailer, and the relatively fast cut set the tone for tension and drama. </p>
+</div>
+<br><br><br>
+<div id="g-templates1-box" class="ai2html">
+
+<!-- Generated by ai2html v0.94.0 - 2019-09-15 02:05 -->
+<!-- ai file: templates2.ai -->
+<style type='text/css' media='screen,print'>
+	#g-templates2-box,
+	#g-templates2-box .g-artboard {
+		margin:0 auto;
+	}
+	#g-templates2-box p {
+		margin:0;
+	}
+	.g-aiAbs {
+		position:absolute;
+	}
+	.g-aiImg {
+		position:absolute;
+		top:0;
+		display:block;
+		width:100% !important;
+	}
+	.g-aiSymbol {
+		position: absolute;
+		box-sizing: border-box;
+	}
+	.g-aiPointText p { white-space: nowrap; }
+	#g-templates2-medium {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates2-medium p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:14px;
+		line-height:18px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates2-medium .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:24px;
+		line-height:16px;
+		height:16px;
+	}
+	#g-templates2-medium .g-pstyle1 {
+		height:18px;
+	}
+	#g-templates2-medium .g-pstyle2 {
+		line-height:16px;
+		height:16px;
+	}
+	#g-templates2-medium .g-pstyle3 {
+		font-size:8px;
+		line-height:9px;
+		height:9px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-medium .g-pstyle4 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(253,146,38);
+	}
+	#g-templates2-medium .g-pstyle5 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(250,79,67);
+	}
+	#g-templates2-medium .g-pstyle6 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(162,15,121);
+	}
+	#g-templates2-medium .g-pstyle7 {
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-medium .g-cstyle0 {
+		font-family:Myriad Pro;
+		font-weight:400;
+	}
+	#g-templates2-laptop {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates2-laptop p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:12px;
+		line-height:14px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates2-laptop .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:18px;
+		line-height:22px;
+		height:22px;
+	}
+	#g-templates2-laptop .g-pstyle1 {
+		height:14px;
+	}
+	#g-templates2-laptop .g-pstyle2 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(253,146,38);
+	}
+	#g-templates2-laptop .g-pstyle3 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(250,79,67);
+	}
+	#g-templates2-laptop .g-pstyle4 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(162,15,121);
+	}
+	#g-templates2-laptop .g-pstyle5 {
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-laptop .g-pstyle6 {
+		font-size:7px;
+		line-height:8px;
+		height:8px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-mobile {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates2-mobile p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:12px;
+		line-height:14px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates2-mobile .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:16px;
+		line-height:19px;
+		height:19px;
+	}
+	#g-templates2-mobile .g-pstyle1 {
+		height:14px;
+	}
+	#g-templates2-mobile .g-pstyle2 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(253,146,38);
+	}
+	#g-templates2-mobile .g-pstyle3 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(250,79,67);
+	}
+	#g-templates2-mobile .g-pstyle4 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(162,15,121);
+	}
+	#g-templates2-mobile .g-pstyle5 {
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-mobile .g-pstyle6 {
+		font-size:9px;
+		line-height:10px;
+		height:10px;
+		color:rgb(170,170,170);
+	}
+
+</style>
+
+<div id="g-templates2-box" class="ai2html">
+
+	<!-- Artboard: medium -->
+	<div id="g-templates2-medium" class="g-artboard" style="width:620px; height:212px;" data-aspect-ratio="2.925" data-min-width="620">
+<div style=""></div>
+		<img id="g-templates2-medium-img" class="g-aiImg" alt="" src="ai2html-output/templates2-medium.png"/>
+		<div id="g-ai0-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:20.711%;margin-top:-32.9px;left:2.3704%;width:595px;">
+			<p class="g-pstyle0">Dissecting a trailer: Amour</p>
+			<p class="g-pstyle1">A detailed breakdown of the official trailer - which parts of the film ended up in the trailer and </p>
+			<p class="g-pstyle2">how they were spliced together<span class="g-cstyle0"> </span></p>
+		</div>
+		<div id="g-ai0-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:35.376%;margin-top:-5px;left:15.8825%;width:77px;">
+			<p class="g-pstyle3">Start of trailer &rarr;</p>
+		</div>
+		<div id="g-ai0-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:39.6213%;margin-top:-5px;left:15.8825%;width:40px;">
+			<p class="g-pstyle3">0 sec</p>
+		</div>
+		<div id="g-ai0-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:39.6213%;margin-top:-5px;left:32.6148%;width:44px;">
+			<p class="g-pstyle3">30 sec</p>
+		</div>
+		<div id="g-ai0-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:39.6213%;margin-top:-5px;left:49.3472%;width:44px;">
+			<p class="g-pstyle3">60 sec</p>
+		</div>
+		<div id="g-ai0-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:39.6213%;margin-top:-5px;left:66.0796%;width:44px;">
+			<p class="g-pstyle3">90 sec</p>
+		</div>
+		<div id="g-ai0-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:39.6213%;margin-top:-5px;left:82.8117%;width:49px;">
+			<p class="g-pstyle3">120 sec</p>
+		</div>
+		<div id="g-ai0-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:51.4962%;margin-top:-7.2px;left:1.0302%;width:104px;">
+			<p class="g-pstyle4">Beginning of film</p>
+		</div>
+		<div id="g-ai0-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:66.1188%;margin-top:-7.2px;left:9.0931%;width:54px;">
+			<p class="g-pstyle5">Middle</p>
+		</div>
+		<div id="g-ai0-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:80.7415%;margin-top:-7.2px;left:11.1542%;width:41px;">
+			<p class="g-pstyle6">End</p>
+		</div>
+		<div id="g-ai0-11" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:91.4691%;margin-top:-6.9px;left:7.0305%;width:66px;">
+			<p class="g-pstyle7">Not in film</p>
+		</div>
+	</div>
+
+	<!-- Artboard: laptop -->
+	<div id="g-templates2-laptop" class="g-artboard" style="width:490px; height:189px;" data-aspect-ratio="2.593" data-min-width="490" data-max-width="619">
+<div style=""></div>
+		<img id="g-templates2-laptop-img" class="g-aiImg" alt="" src="ai2html-output/templates2-laptop.png"/>
+		<div id="g-ai1-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:26.0941%;margin-top:-32.3px;left:1.5446%;width:391px;">
+			<p class="g-pstyle0">Dissecting a trailer: Amour</p>
+			<p class="g-pstyle1">A breakdown of the official trailer - which parts of the film ended up in </p>
+			<p class="g-pstyle1">the trailer and how they were sliced together.</p>
+		</div>
+		<div id="g-ai1-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:28.1271%;margin-top:-6.2px;left:81.7411%;width:90px;">
+			<p class="g-pstyle2">Beginning of film</p>
+		</div>
+		<div id="g-ai1-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:34.4763%;margin-top:-6.2px;left:81.7411%;width:48px;">
+			<p class="g-pstyle3">Middle</p>
+		</div>
+		<div id="g-ai1-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:40.8255%;margin-top:-6.2px;left:81.7411%;width:38px;">
+			<p class="g-pstyle4">End</p>
+		</div>
+		<div id="g-ai1-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:47.0608%;margin-top:-5.9px;left:81.7411%;width:59px;">
+			<p class="g-pstyle5">Not in film</p>
+		</div>
+		<div id="g-ai1-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:84.9837%;margin-top:-4.6px;left:0.3942%;width:39px;">
+			<p class="g-pstyle6">0 sec</p>
+		</div>
+		<div id="g-ai1-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:84.9837%;margin-top:-4.6px;left:19.7856%;width:30px;">
+			<p class="g-pstyle6">30</p>
+		</div>
+		<div id="g-ai1-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:84.9837%;margin-top:-4.6px;left:39.1773%;width:30px;">
+			<p class="g-pstyle6">60</p>
+		</div>
+		<div id="g-ai1-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:84.9837%;margin-top:-4.6px;left:58.5686%;width:30px;">
+			<p class="g-pstyle6">90</p>
+		</div>
+		<div id="g-ai1-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:84.9837%;margin-top:-4.6px;left:78.0676%;width:34px;">
+			<p class="g-pstyle6">120</p>
+		</div>
+	</div>
+
+	<!-- Artboard: mobile -->
+	<div id="g-templates2-mobile" class="g-artboard" style="max-width: 375px;max-height: 266px" data-aspect-ratio="1.411" data-min-width="0" data-max-width="489">
+<div style="padding: 0 0 70.88% 0;"></div>
+		<img id="g-templates2-mobile-img" class="g-aiImg" alt="" src="ai2html-output/templates2-mobile.png"/>
+		<div id="g-ai2-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:16.6872%;margin-top:-31.4px;left:2.5404%;width:382px;">
+			<p class="g-pstyle0">Dissecting a trailer: Amour</p>
+			<p class="g-pstyle1">Seconds counts! How many seconds do different parts of the </p>
+			<p class="g-pstyle1">film have in the trailer?</p>
+		</div>
+		<div id="g-ai2-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:34.3009%;margin-top:-7.2px;left:1.925%;width:104px;">
+			<p class="g-pstyle2">Beginning of film</p>
+		</div>
+		<div id="g-ai2-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:50.4785%;margin-top:-7.2px;left:15.2557%;width:54px;">
+			<p class="g-pstyle3">Middle</p>
+		</div>
+		<div id="g-ai2-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:67.0323%;margin-top:-7.2px;left:18.6633%;width:41px;">
+			<p class="g-pstyle4">End</p>
+		</div>
+		<div id="g-ai2-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:82.7367%;margin-top:-6.9px;left:11.8456%;width:66px;">
+			<p class="g-pstyle5">Not in film</p>
+		</div>
+		<div id="g-ai2-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.3873%;margin-top:-5.5px;left:38.6982%;width:31px;">
+			<p class="g-pstyle6">15</p>
+		</div>
+		<div id="g-ai2-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.3873%;margin-top:-5.5px;left:54.3906%;width:31px;">
+			<p class="g-pstyle6">30</p>
+		</div>
+		<div id="g-ai2-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.3873%;margin-top:-5.5px;left:70.1273%;width:31px;">
+			<p class="g-pstyle6">45</p>
+		</div>
+		<div id="g-ai2-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.3873%;margin-top:-5.5px;left:85.6232%;width:31px;">
+			<p class="g-pstyle6">60</p>
+		</div>
+		<div id="g-ai2-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.3873%;margin-top:-5.5px;left:22.8362%;width:42px;">
+			<p class="g-pstyle6">0 sec</p>
+		</div>
+	</div>
+
+</div>
+
+<!-- End ai2html - 2019-09-15 02:05 -->
+
+
+</div>
+
+<div class="story-body">
+				<p class="body-text serif">Unlike the previous example, the trailer of "Amour" did not care much about following the narrtive order of the film. Instead of displaying moments of emotion outburst, the trailer gradually lays out an emotion buildup by cutting back and forth between different parts of the film. The middle part of the film has the longest runtime in total, follows by not-in-film clips, which are all titles and credits.</p>
+					<p class="body-text serif">On the other hand, the longer shot length in the trailer corresponds to the stylistic choice of long takes in the film. The film did not follow the threeThis kind of trend is more predominated in the art cinema and less seen in Hollywood blockbusters. The trailer is also relatively shorter, perhaps a reflection of its less commercial nature. </p>
+				
+
+</div>
+<br><br><br>
+
+<div id="g-templates2-box" class="ai2html">
+
+<!-- Generated by ai2html v0.94.0 - 2019-09-15 23:35 -->
+<!-- ai file: templates2 [Recovered].ai -->
+<style type='text/css' media='screen,print'>
+	#g-templates2-_Recovered_-box,
+	#g-templates2-_Recovered_-box .g-artboard {
+		margin:0 auto;
+	}
+	#g-templates2-_Recovered_-box p {
+		margin:0;
+	}
+	.g-aiAbs {
+		position:absolute;
+	}
+	.g-aiImg {
+		position:absolute;
+		top:0;
+		display:block;
+		width:100% !important;
+	}
+	.g-aiSymbol {
+		position: absolute;
+		box-sizing: border-box;
+	}
+	.g-aiPointText p { white-space: nowrap; }
+	#g-templates2-_Recovered_-medium {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates2-_Recovered_-medium p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:14px;
+		line-height:18px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:24px;
+		line-height:16px;
+		height:16px;
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle1 {
+		height:18px;
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle2 {
+		line-height:16px;
+		height:16px;
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle3 {
+		font-size:8px;
+		line-height:9px;
+		height:9px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle4 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(253,146,38);
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle5 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(250,79,67);
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle6 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(162,15,121);
+	}
+	#g-templates2-_Recovered_-medium .g-pstyle7 {
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-_Recovered_-medium .g-cstyle0 {
+		font-family:Myriad Pro;
+		font-weight:400;
+	}
+	#g-templates2-_Recovered_-laptop {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates2-_Recovered_-laptop p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:12px;
+		line-height:14px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates2-_Recovered_-laptop .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:18px;
+		line-height:22px;
+		height:22px;
+	}
+	#g-templates2-_Recovered_-laptop .g-pstyle1 {
+		height:14px;
+	}
+	#g-templates2-_Recovered_-laptop .g-pstyle2 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(253,146,38);
+	}
+	#g-templates2-_Recovered_-laptop .g-pstyle3 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(250,79,67);
+	}
+	#g-templates2-_Recovered_-laptop .g-pstyle4 {
+		font-weight:bold;
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(162,15,121);
+	}
+	#g-templates2-_Recovered_-laptop .g-pstyle5 {
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-_Recovered_-laptop .g-pstyle6 {
+		font-size:7px;
+		line-height:8px;
+		height:8px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-_Recovered_-mobile {
+		position:relative;
+		overflow:hidden;
+	}
+	#g-templates2-_Recovered_-mobile p {
+		font-family:arial,helvetica,sans-serif;
+		font-size:12px;
+		line-height:14px;
+		height:auto;
+		filter:alpha(opacity=100);
+		-ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+		opacity:1;
+		letter-spacing:0em;
+		text-align:left;
+		color:rgb(0,0,0);
+		text-transform:none;
+		padding-bottom:0;
+		padding-top:0;
+		mix-blend-mode:normal;
+		font-style:normal;
+		position:static;
+	}
+	#g-templates2-_Recovered_-mobile .g-pstyle0 {
+		font-family:georgia,'times new roman',times,serif;
+		font-weight:bold;
+		font-size:16px;
+		line-height:19px;
+		height:19px;
+	}
+	#g-templates2-_Recovered_-mobile .g-pstyle1 {
+		height:14px;
+	}
+	#g-templates2-_Recovered_-mobile .g-pstyle2 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(253,146,38);
+	}
+	#g-templates2-_Recovered_-mobile .g-pstyle3 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(250,79,67);
+	}
+	#g-templates2-_Recovered_-mobile .g-pstyle4 {
+		font-weight:bold;
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(162,15,121);
+	}
+	#g-templates2-_Recovered_-mobile .g-pstyle5 {
+		font-size:10px;
+		line-height:12px;
+		height:12px;
+		color:rgb(170,170,170);
+	}
+	#g-templates2-_Recovered_-mobile .g-pstyle6 {
+		font-size:8px;
+		line-height:10px;
+		height:10px;
+		color:rgb(170,170,170);
+	}
+
+</style>
+
+<div id="g-templates2-_Recovered_-box" class="ai2html">
+
+	<!-- Artboard: medium -->
+	<div id="g-templates2-_Recovered_-medium" class="g-artboard" style="width:620px; height:212px;" data-aspect-ratio="2.925" data-min-width="620">
+<div style=""></div>
+		<img id="g-templates2-_Recovered_-medium-img" class="g-aiImg" alt="" src="ai2html-output/templates2-_Recovered_-medium.png"/>
+		<div id="g-ai0-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:20.711%;margin-top:-32.9px;left:2.3704%;width:595px;">
+			<p class="g-pstyle0">Dissecting a trailer: Lincoln</p>
+			<p class="g-pstyle1">A detailed breakdown of the official trailer - which parts of the film ended up in the trailer and </p>
+			<p class="g-pstyle2">how they were spliced together<span class="g-cstyle0"> </span></p>
+		</div>
+		<div id="g-ai0-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:33.0405%;margin-top:-5px;left:15.7401%;width:78px;">
+			<p class="g-pstyle3">Start of trailer &rarr;</p>
+		</div>
+		<div id="g-ai0-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:37.7575%;margin-top:-5px;left:15.7401%;width:40px;">
+			<p class="g-pstyle3">0 sec</p>
+		</div>
+		<div id="g-ai0-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:37.7575%;margin-top:-5px;left:32.6518%;width:45px;">
+			<p class="g-pstyle3">30 sec</p>
+		</div>
+		<div id="g-ai0-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:37.7575%;margin-top:-5px;left:49.5635%;width:45px;">
+			<p class="g-pstyle3">60 sec</p>
+		</div>
+		<div id="g-ai0-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:37.7575%;margin-top:-5px;left:66.4752%;width:45px;">
+			<p class="g-pstyle3">90 sec</p>
+		</div>
+		<div id="g-ai0-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:37.7575%;margin-top:-5px;left:83.3869%;width:49px;">
+			<p class="g-pstyle3">120 sec</p>
+		</div>
+		<div id="g-ai0-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:51.4962%;margin-top:-7.2px;left:1.0302%;width:104px;">
+			<p class="g-pstyle4">Beginning of film</p>
+		</div>
+		<div id="g-ai0-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:66.1188%;margin-top:-7.2px;left:9.0931%;width:54px;">
+			<p class="g-pstyle5">Middle</p>
+		</div>
+		<div id="g-ai0-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:80.7415%;margin-top:-7.2px;left:11.1542%;width:41px;">
+			<p class="g-pstyle6">End</p>
+		</div>
+		<div id="g-ai0-11" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:91.4691%;margin-top:-6.9px;left:7.0305%;width:66px;">
+			<p class="g-pstyle7">Not in film</p>
+		</div>
+	</div>
+
+	<!-- Artboard: laptop -->
+	<div id="g-templates2-_Recovered_-laptop" class="g-artboard" style="width:490px; height:189px;" data-aspect-ratio="2.593" data-min-width="490" data-max-width="619">
+<div style=""></div>
+		<img id="g-templates2-_Recovered_-laptop-img" class="g-aiImg" alt="" src="ai2html-output/templates2-_Recovered_-laptop.png"/>
+		<div id="g-ai1-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:26.0941%;margin-top:-32.3px;left:1.5446%;width:391px;">
+			<p class="g-pstyle0">Dissecting a trailer: Lincoln</p>
+			<p class="g-pstyle1">A breakdown of the official trailer - which parts of the film ended up in </p>
+			<p class="g-pstyle1">the trailer and how they were sliced together.</p>
+		</div>
+		<div id="g-ai1-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:28.1271%;margin-top:-6.2px;left:81.7411%;width:90px;">
+			<p class="g-pstyle2">Beginning of film</p>
+		</div>
+		<div id="g-ai1-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:34.4763%;margin-top:-6.2px;left:81.7411%;width:48px;">
+			<p class="g-pstyle3">Middle</p>
+		</div>
+		<div id="g-ai1-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:40.8255%;margin-top:-6.2px;left:81.7411%;width:38px;">
+			<p class="g-pstyle4">End</p>
+		</div>
+		<div id="g-ai1-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:47.0608%;margin-top:-5.9px;left:81.7411%;width:59px;">
+			<p class="g-pstyle5">Not in film</p>
+		</div>
+		<div id="g-ai1-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:88.1557%;margin-top:-4.6px;left:0.5226%;width:39px;">
+			<p class="g-pstyle6">0 sec</p>
+		</div>
+		<div id="g-ai1-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:88.1557%;margin-top:-4.6px;left:19.889%;width:30px;">
+			<p class="g-pstyle6">30</p>
+		</div>
+		<div id="g-ai1-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:88.1557%;margin-top:-4.6px;left:39.2554%;width:30px;">
+			<p class="g-pstyle6">60</p>
+		</div>
+		<div id="g-ai1-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:88.1557%;margin-top:-4.6px;left:58.6217%;width:30px;">
+			<p class="g-pstyle6">90</p>
+		</div>
+		<div id="g-ai1-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:88.1557%;margin-top:-4.6px;left:78.0953%;width:34px;">
+			<p class="g-pstyle6">120</p>
+		</div>
+	</div>
+
+	<!-- Artboard: mobile -->
+	<div id="g-templates2-_Recovered_-mobile" class="g-artboard" style="max-width: 375px;max-height: 266px" data-aspect-ratio="1.411" data-min-width="0" data-max-width="489">
+<div style="padding: 0 0 70.88% 0;"></div>
+		<img id="g-templates2-_Recovered_-mobile-img" class="g-aiImg" alt="" src="ai2html-output/templates2-_Recovered_-mobile.png"/>
+		<div id="g-ai2-1" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:16.6872%;margin-top:-31.4px;left:2.5404%;width:348px;">
+			<p class="g-pstyle0">Dissecting a trailer: Lincoln</p>
+			<p class="g-pstyle1">Seconds counts! How many seconds do different parts of the </p>
+			<p class="g-pstyle1">film have in the trailer?</p>
+		</div>
+		<div id="g-ai2-2" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:34.3009%;margin-top:-7.2px;left:1.925%;width:104px;">
+			<p class="g-pstyle2">Beginning of film</p>
+		</div>
+		<div id="g-ai2-3" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:50.4785%;margin-top:-7.2px;left:15.2557%;width:54px;">
+			<p class="g-pstyle3">Middle</p>
+		</div>
+		<div id="g-ai2-4" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:67.0323%;margin-top:-7.2px;left:18.6633%;width:41px;">
+			<p class="g-pstyle4">End</p>
+		</div>
+		<div id="g-ai2-5" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:82.7367%;margin-top:-6.9px;left:11.8456%;width:66px;">
+			<p class="g-pstyle5">Not in film</p>
+		</div>
+		<div id="g-ai2-6" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.0844%;margin-top:-5.7px;left:22.9367%;width:41px;">
+			<p class="g-pstyle6">0 sec</p>
+		</div>
+		<div id="g-ai2-7" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.0844%;margin-top:-5.7px;left:37.8367%;width:31px;">
+			<p class="g-pstyle6">15</p>
+		</div>
+		<div id="g-ai2-8" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.0844%;margin-top:-5.7px;left:52.5784%;width:31px;">
+			<p class="g-pstyle6">30</p>
+		</div>
+		<div id="g-ai2-9" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.0844%;margin-top:-5.7px;left:67.3607%;width:31px;">
+			<p class="g-pstyle6">45</p>
+		</div>
+		<div id="g-ai2-10" class="g-ai2html-settings g-aiAbs g-aiPointText" style="top:95.0844%;margin-top:-5.7px;left:81.9172%;width:31px;">
+			<p class="g-pstyle6">60</p>
+		</div>
+	</div>
+
+</div>
+
+<!-- End ai2html - 2019-09-15 23:35 -->
+
+
+</div>
+
+<div class="story-body">
+	<p class="body-text serif">The trailer of "Lincoln" perhaps is the most bizarre of all. The alternation between the beginning/middle part and the ending part in the trailer showcase the background context of the film while at the same time emphasizes on the tensions. It is more about setting the mood and tone rather than giving a synopsis of the film in a chronological order.</p>
+
+	<p class="body-text serif">It is also worth mentioning that the part that takes up the longest runtime in the trailer is actaully from non-film clips. Besides some large text fonts of the title and credits, several not-in-film clip is actaully a "blackout" scene with only black background on the screen, and it last for several seconds. What a great way to build up suspense. </p>
+</div>
+
+  </body>
+</html>
